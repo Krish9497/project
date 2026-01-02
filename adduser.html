@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create User</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+    --bg: #f5f5f7;
+    --card: rgba(255,255,255,0.78);
+    --border: rgba(0,0,0,0.08);
+    --text: #1c1c1e;
+    --subtext: #6e6e73;
+    --primary: #007aff;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--card);
+    backdrop-filter: blur(22px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+    animation: fadeUp 0.55s cubic-bezier(.22,.61,.36,1);
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    margin: 0 0 24px;
+    font-size: 22px;
+    color: var(--text);
+    text-align: center;
+}
+
+.field {
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: 13px;
+    color: var(--subtext);
+    display: block;
+    margin-bottom: 6px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
+}
+
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 18px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(0,122,255,0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:active {
+    transform: scale(0.96);
+    box-shadow: 0 6px 16px rgba(0,122,255,0.3);
+}
+
+.note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--subtext);
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Create User</h2>
+
+    <div class="field">
+        <label>User ID</label>
+        <input type="text" placeholder="Create User ID" required>
+    </div>
+
+    <div class="field">
+        <label>Password</label>
+        <input type="password" placeholder="Create Password" required>
+    </div>
+
+    <button>Create User</button>
+
+    <div class="note">
+        Credentials will be used for login
+    </div>
+</div>
+
+</body>
+</html>
