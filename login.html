@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Login | AMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 30px;
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card shadow-lg">
+    <div class="text-center mb-4">
+        <i class="bi bi-person-circle fs-1 text-primary"></i>
+        <h4 class="mt-2 fw-bold">User Login</h4>
+        <p class="text-muted small">Attendance Management System</p>
+    </div>
+
+    <form>
+        <!-- User ID -->
+        <div class="mb-3">
+            <label class="form-label">User ID</label>
+            <input type="text" class="form-control" placeholder="Enter User ID">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" placeholder="Enter Password">
+        </div>
+
+        <!-- Role (optional but useful) -->
+        <div class="mb-3">
+            <label class="form-label">Login As</label>
+            <select class="form-select">
+                <option selected disabled>Select Role</option>
+                <option>Admin</option>
+                <option>Faculty</option>
+                <option>Student</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+        <small class="text-muted">
+            © 2025 AMS
+        </small>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
