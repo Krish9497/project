@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attendance Reports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+    --bg:#f5f5f7;
+    --card:rgba(255,255,255,0.82);
+    --border:rgba(0,0,0,0.08);
+    --text:#1c1c1e;
+    --sub:#6e6e73;
+    --blue:#007aff;
+    --green:#34c759;
+}
+
+*{
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+}
+
+body{
+    margin:0;
+    padding:24px;
+    background:var(--bg);
+    color:var(--text);
+}
+
+h1{
+    font-size:26px;
+    margin-bottom:20px;
+}
+
+.section{
+    margin-bottom:28px;
+}
+
+.card{
+    background:var(--card);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
+    animation:fadeUp .45s ease;
+}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(18px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+}
+
+.stat h4{
+    margin:0;
+    font-size:14px;
+    color:var(--sub);
+}
+
+.stat p{
+    margin-top:8px;
+    font-size:30px;
+    font-weight:600;
+}
+
+.green{color:var(--green)}
+.blue{color:var(--blue)}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Attendance Reports</h1>
+
+<!-- Overall Statistics -->
+<div class="grid section">
+    <div class="card stat">
+        <h4>Total Sessions</h4>
+        <p class="blue">{{ total_sessions }}</p>
+    </div>
+
+    <div class="card stat">
+        <h4>Total Attendance Records</h4>
+        <p class="green">{{ total_attendance }}</p>
+    </div>
+
+    <div class="card stat">
+        <h4>Overall Attendance Rate</h4>
+        <p>
+            {% if total_attendance > 0 %}
+                {{ ((total_present / total_attendance) * 100)|round(1) }}%
+            {% else %}
+                0%
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<!-- Class-wise Attendance -->
+<div class="card section">
+    <h3 style="margin-bottom:16px">Class-wise Attendance</h3>
+    <canvas id="classAttendanceChart" height="90"></canvas>
+</div>
+
+<script>
+const classLabels = {{ class_stats | map(attribute=0) | list | tojson }};
+const totalData   = {{ class_stats | map(attribute=1) | list | tojson }};
+const presentData = {{ class_stats | map(attribute=2) | list | tojson }};
+
+const percentageData = totalData.map((t,i)=>{
+    return t > 0 ? ((presentData[i]/t)*100).toFixed(1) : 0;
+});
+
+new Chart(document.getElementById('classAttendanceChart'),{
+    type:'bar',
+    data:{
+        labels:classLabels,
+        datasets:[{
+            label:'Attendance %',
+            data:percentageData,
+            backgroundColor:'#007aff'
+        }]
+    },
+    options:{
+        responsive:true,
+        scales:{
+            y:{
+                beginAtZero:true,
+                max:100,
+                ticks:{
+                    callback:v=>v+'%'
+                }
+            }
+        },
+        plugins:{
+            tooltip:{
+                callbacks:{
+                    label:c=>`Attendance: ${c.parsed.y}%`
+                }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
