@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Reports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+    --bg:#f5f5f7;
+    --card:rgba(255,255,255,0.8);
+    --border:rgba(0,0,0,0.08);
+    --text:#1c1c1e;
+    --sub:#6e6e73;
+    --blue:#007aff;
+    --green:#34c759;
+    --red:#ff3b30;
+    --orange:#ff9f0a;
+}
+
+*{
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+}
+
+body{
+    margin:0;
+    background:var(--bg);
+    padding:24px;
+    color:var(--text);
+}
+
+h1{
+    font-size:26px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:var(--card);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:16px;
+    margin-bottom:24px;
+}
+
+.stat h3{
+    margin:0;
+    font-size:14px;
+    color:var(--sub);
+}
+
+.stat p{
+    margin:6px 0 0;
+    font-size:28px;
+    font-weight:600;
+}
+
+.section{
+    margin-bottom:28px;
+}
+
+.filter{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+input{
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    font-size:14px;
+}
+
+button{
+    padding:12px 18px;
+    border-radius:16px;
+    border:none;
+    background:var(--blue);
+    color:white;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table th,.table td{
+    padding:12px;
+    font-size:14px;
+    border-bottom:1px solid var(--border);
+}
+
+.badge{
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:12px;
+    color:white;
+}
+.badge.warn{background:var(--orange)}
+.badge.danger{background:var(--red)}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Admin Reports & Analytics</h1>
+
+<!-- Date Filter -->
+<div class="card section filter">
+    <input type="date" name="start_date">
+    <input type="date" name="end_date">
+    <button type="submit">Apply Filter</button>
+</div>
+
+<!-- Overall Stats -->
+<div class="grid section">
+    <div class="card stat">
+        <h3>Total Students</h3>
+        <p>{{ total_students }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Total Faculty</h3>
+        <p>{{ total_faculty }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Total Classes</h3>
+        <p>{{ total_classes }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Total Subjects</h3>
+        <p>{{ total_subjects }}</p>
+    </div>
+</div>
+
+<!-- Attendance Stats -->
+<div class="grid section">
+    <div class="card stat">
+        <h3>Total Attendance</h3>
+        <p>{{ total_attendance }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Present</h3>
+        <p style="color:var(--green)">{{ present_count }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Absent</h3>
+        <p style="color:var(--red)">{{ absent_count }}</p>
+    </div>
+    <div class="card stat">
+        <h3>Attendance Rate</h3>
+        <p>{{ attendance_rate }}%</p>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="card section">
+    <h3>Daily Attendance Trend</h3>
+    <canvas id="dailyChart"></canvas>
+</div>
+
+<div class="grid section">
+    <div class="card">
+        <h3>Class-wise Attendance</h3>
+        <canvas id="classChart"></canvas>
+    </div>
+    <div class="card">
+        <h3>Subject-wise Attendance</h3>
+        <canvas id="subjectChart"></canvas>
+    </div>
+</div>
+
+<!-- Low Attendance Table -->
+<div class="card section">
+    <h3 style="color:var(--red)">⚠ Low Attendance Students</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Total</th>
+                <th>Present</th>
+                <th>%</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in low_attendance_students %}
+            <tr>
+                <td>{{ item.student.name }}</td>
+                <td>{{ item.student.class_ref.name }}</td>
+                <td>{{ item.total }}</td>
+                <td>{{ item.present }}</td>
+                <td>
+                    <span class="badge {% if item.percentage < 50 %}danger{% else %}warn{% endif %}">
+                        {{ item.percentage }}%
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+const dailyLabels = {{ daily_labels | tojson }};
+const dailyPresent = {{ daily_present | tojson }};
+const dailyAbsent = {{ daily_absent | tojson }};
+
+new Chart(document.getElementById('dailyChart'),{
+    type:'line',
+    data:{
+        labels:dailyLabels,
+        datasets:[
+            {label:'Present',data:dailyPresent,borderColor:'#34c759',tension:.4},
+            {label:'Absent',data:dailyAbsent,borderColor:'#ff3b30',tension:.4}
+        ]
+    }
+});
+
+new Chart(document.getElementById('classChart'),{
+    type:'bar',
+    data:{
+        labels:{{ class_labels | tojson }},
+        datasets:[{data:{{ class_percentages | tojson }},backgroundColor:'#007aff'}]
+    },
+    options:{scales:{y:{max:100,beginAtZero:true}}}
+});
+
+new Chart(document.getElementById('subjectChart'),{
+    type:'bar',
+    data:{
+        labels:{{ subject_labels | tojson }},
+        datasets:[{data:{{ subject_percentages | tojson }},backgroundColor:'#34c759'}]
+    },
+    options:{scales:{y:{max:100,beginAtZero:true}}}
+});
+</script>
+
+</body>
+</html>
